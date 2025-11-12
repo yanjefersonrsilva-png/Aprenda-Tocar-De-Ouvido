@@ -1,71 +1,563 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aprenda Tocar de Ouvido</title>
-  <style>
-    body {
-      font-family: "Poppins", sans-serif;
-      background: linear-gradient(135deg, #1a1a2e, #16213e);
-      color: white;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-    }
-    header {
-      padding: 20px;
-      background-color: #0f3460;
-      font-size: 1.8em;
-      font-weight: bold;
-    }
-    main {
-      padding: 40px;
-    }
-    .search-bar input {
-      width: 60%;
-      padding: 10px;
-      border-radius: 10px;
-      border: none;
-      margin: 20px 0;
-      font-size: 1em;
-    }
-    button {
-      background-color: #e94560;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 10px;
-      font-size: 1em;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    button:hover {
-      background-color: #ff6f91;
-    }
-    footer {
-      background-color: #0f3460;
-      padding: 10px;
-      font-size: 0.9em;
-      position: fixed;
-      width: 100%;
-      bottom: 0;
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Aprenda Tocar de Ouvido</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#000000; /* preto */
+    --bg2:#0b122b; /* azul escuro */
+    --accent1:#6C63FF; /* lilás */
+    --accent2:#3B82F6; /* azul */
+    --gold:#D4AF37;
+    --muted:#d9d7ff;
+    --glass: rgba(255,255,255,0.04);
+    --radius:14px;
+    --card: rgba(255,255,255,0.03);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+    color:#fff;
+    background: linear-gradient(180deg, var(--bg1), var(--accent1) 40%, var(--bg2));
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  header{
+    position:fixed; left:0; right:0; top:0; height:72px;
+    display:flex; align-items:center; gap:18px;
+    padding:12px 20px;
+    backdrop-filter: blur(8px);
+    background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-bottom:1px solid rgba(255,255,255,0.04);
+    z-index:40;
+  }
+  .logo{
+    display:flex; gap:12px; align-items:center;
+    font-family:"Playfair Display", serif; font-size:20px; font-weight:700;
+    letter-spacing:0.4px;
+  }
+  .logo .spark{color:var(--gold); margin-left:4px}
+  nav{margin-left:auto; display:flex; gap:10px; align-items:center}
+  nav button{background:transparent;border:1px solid rgba(255,255,255,0.04); color:var(--muted); padding:8px 12px; border-radius:10px; cursor:pointer}
+  nav button.primary{background:linear-gradient(90deg,var(--accent1),var(--accent2)); border:0; color:#fff; font-weight:700}
+  main{padding:110px 24px 80px}
+  .container{max-width:1100px; margin:0 auto; display:grid; grid-template-columns: 1fr 360px; gap:24px; align-items:start}
+  /* hero/player */
+  .hero{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent); padding:22px; border-radius:18px; box-shadow: 0 10px 40px rgba(2,6,23,0.6); position:relative; overflow:hidden}
+  .hero .title{font-family:"Playfair Display", serif; font-size:30px; margin:0 0 8px 0; letter-spacing:0.2px}
+  .hero .subtitle{color:var(--muted); margin:0 0 20px 0}
+  /* animated guitars in background */
+  .guitar-bg{
+    position:absolute; right:-120px; top:-40px; width:520px; height:520px; pointer-events:none; opacity:0.12;
+    transform-origin:center;
+    animation: floaty 10s ease-in-out infinite;
+    filter: drop-shadow(0 20px 40px rgba(0,0,0,0.6));
+  }
+  @keyframes floaty { 0%{ transform: translateY(0) rotate(-6deg)} 50%{ transform: translateY(12px) rotate(6deg)} 100%{ transform: translateY(0) rotate(-6deg)} }
+  /* player */
+  .player{display:flex; gap:18px; align-items:center; padding:14px; border-radius:14px; background:var(--card); border:1px solid rgba(255,255,255,0.03)}
+  .controls{display:flex; gap:12px; align-items:center}
+  .play-btn{width:66px; height:66px; border-radius:16px; display:grid; place-items:center; cursor:pointer; background:linear-gradient(180deg,var(--accent1),var(--accent2)); box-shadow: 0 8px 20px rgba(99,76,255,0.24)}
+  .play-btn svg{filter:drop-shadow(0 6px 20px rgba(0,0,0,0.4))}
+  .info{flex:1}
+  .track-title{font-weight:700}
+  .track-sub{font-size:13px;color:var(--muted); margin-top:4px}
+  .progress{height:8px; background:rgba(255,255,255,0.03); border-radius:8px; overflow:hidden; margin-top:10px}
+  .progress > i{display:block; height:100%; width:0%; background:linear-gradient(90deg,var(--accent2),var(--accent1)); border-radius:8px}
+  .player-footer{display:flex; align-items:center; justify-content:space-between; margin-top:10px}
+  .small{font-size:13px;color:var(--muted)}
+  /* right column */
+  aside{position:relative}
+  .card{background:var(--card); border-radius:12px; padding:14px; border:1px solid rgba(255,255,255,0.03); margin-bottom:16px}
+  .tips-list{display:flex; flex-direction:column; gap:8px}
+  .tip{background:linear-gradient(90deg, rgba(255,255,255,0.02), transparent); padding:10px; border-radius:10px; font-size:14px}
+  .footer-note{font-size:12px;color:var(--muted); text-align:center; padding:8px}
+  /* responsive */
+  @media (max-width:1000px){
+    .container{grid-template-columns:1fr}
+    .guitar-bg{display:none}
+  }
+  /* subtle floating notes */
+  .note{position:absolute; left:20px; top:50%; transform:translateY(-50%); opacity:0.06; width:220px}
+</style>
 </head>
 <body>
-  <header>🎵 Aprenda Tocar de Ouvido 🎶</header>
-  <main>
-    <h2>Descubra o tom das suas músicas favoritas</h2>
-    <div class="search-bar">
-      <input type="text" placeholder="Pesquise uma música ou selecione aleatório..." />
-    </div>
-    <button>Iniciar treino</button>
-    <p>Ouça a música e tente descobrir o tom. Quando acabar o tempo, o site mostrará se você acertou!</p>
-    <hr style="margin: 40px 0; border-color: #e94560;">
-    <h3>Dica rápida:</h3>
-    <p>Se o primeiro acorde for do <b>1º grau</b> e você sentir a vontade de um acorde com 7, o próximo acorde pode estar no <b>4º grau</b>.</p>
-  </main>
-  <footer>© 2025 Aprenda Tocar de Ouvido</footer>
+<header>
+  <div class="logo">🎶 Aprenda Tocar de Ouvido <span class="spark">•</span></div>
+  <nav>
+    <button id="btnHome" class="primary">Início</button>
+    <button id="btnLibrary">Biblioteca</button>
+    <button id="btnExercises">Exercícios</button>
+  </nav>
+</header>
+
+<main>
+  <div class="container">
+    <section class="hero" aria-labelledby="heroTitle">
+      <h1 id="heroTitle" class="title">Treine seu ouvido e descubra o tom certo</h1>
+      <p class="subtitle">Toque músicas instrumentais grátis, treine acordes e receba dicas harmônicas atualizadas automaticamente às 07:00.</p>
+
+      <!-- animated guitars (SVG) -->
+      <svg class="guitar-bg" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+        <!-- two simplified guitars overlapped for style -->
+        <g transform="translate(50,60)">
+          <g transform="scale(0.9)">
+            <path d="M200 30c0 0 60 10 86 36 26 26 56 100 30 150s-80 90-110 90-72-16-86-40" fill="none" stroke="white" stroke-opacity="0.14" stroke-width="4"/>
+            <ellipse cx="180" cy="140" rx="34" ry="42" fill="none" stroke="white" stroke-opacity="0.06" stroke-width="6"/>
+            <path d="M60 200c20 60 80 60 120 60s86-18 100-34" fill="none" stroke="white" stroke-opacity="0.08" stroke-width="3"/>
+          </g>
+        </g>
+      </svg>
+
+      <!-- player -->
+      <div style="margin-top:14px" class="player" role="region" aria-label="Player de músicas">
+        <div class="controls">
+          <div class="play-btn" id="playBtn" title="Tocar / Pausar (espaço)">
+            <svg id="playIcon" width="28" height="28" viewBox="0 0 24 24" fill="none">
+              <path d="M5 3v18l15-9L5 3z" fill="#fff"/>
+            </svg>
+            <svg id="pauseIcon" width="28" height="28" viewBox="0 0 24 24" fill="none" style="display:none">
+              <path d="M6 4h4v16H6zM14 4h4v16h-4z" fill="#fff"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="info">
+          <div class="track-title" id="trackTitle">—</div>
+          <div class="track-sub" id="trackArtist">Instrumental livre</div>
+
+          <div class="progress" aria-hidden>
+            <i id="progressBar"></i>
+          </div>
+
+          <div class="player-footer">
+            <div class="small" id="timeInfo">00:00 / 00:00</div>
+            <div style="display:flex; gap:8px; align-items:center">
+              <button id="btnRandom" class="small">Tocar aleatório</button>
+              <button id="btnLoop" class="small">Loop</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:14px" class="small">Para melhores resultados, use fones de ouvido e permita a reprodução de áudio no navegador.</div>
+    </section>
+
+    <aside>
+      <div class="card">
+        <h4>Dicas Harmônicas</h4>
+        <div id="tips" class="tips-list">
+          <!-- tips inserted by JS -->
+        </div>
+        <div class="footer-note small" id="tipsUpdated">Última atualização: —</div>
+      </div>
+
+      <div class="card">
+        <h4>Biblioteca (demo)</h4>
+        <div class="small">Use o botão <b>Tocar aleatório</b> para testar as instrumentais. Em produção, você pode apontar para uma lista pública de MP3s.</div>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<footer style="position:fixed; left:0; right:0; bottom:0; background:linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02)); padding:8px 12px; text-align:center; font-size:13px; color:var(--muted)">
+  Desenvolvido com 💙 por Yan Jeferson — Aprenda Tocar de Ouvido
+</footer>
+
+<script>
+/*
+  Aprenda Tocar de Ouvido — Versão com:
+  - tema escuro degradê (preto → lilás → azul)
+  - violões animados ao fundo (SVG com leve float)
+  - player com WebAudio sintetizado por padrão (garante reprodução)
+  - suporte a REMOTE_TRACKS_URL (JSON com faixas online)
+  - dicas buscadas de REMOTE_TIPS_URL (JSON). Atualiza automaticamente
+    diariamente às 07:00 (verificadas no carregamento da página).
+*/
+
+/* ================ CONFIGURAÇÕES ================ */
+/* Se você quiser hospedar suas próprias dicas e faixas:
+   - Crie um arquivo JSON público (por exemplo, num Gist ou GitHub Pages).
+   - Para dicas (tips.json), o formato esperado é:
+     ["Dica 1", "Dica 2", "Dica 3", ...]
+   - Para tracks (tracks.json), o formato esperado é:
+     [{"title":"Nome","artist":"Autor","url":"https://.../file.mp3","key":"C","chords":["C","F","G"]}, ...]
+   - Preencha abaixo o URL bruto (raw) do seu Gist ou GitHub raw file.
+*/
+const REMOTE_TIPS_URL = ""; // ex: "https://gist.githubusercontent.com/usuario/gistid/raw/tips.json"
+const REMOTE_TRACKS_URL = ""; // ex: "https://gist.githubusercontent.com/usuario/gistid/raw/tracks.json"
+
+/* Hora do dia (local) para atualizar dicas (07 => 7:00 da manhã) */
+const DAILY_TIP_HOUR = 7;
+
+/* ================ FIM DAS CONFIGS ================ */
+
+/* ---------- UI refs ---------- */
+const playBtn = document.getElementById('playBtn');
+const playIcon = document.getElementById('playIcon');
+const pauseIcon = document.getElementById('pauseIcon');
+const trackTitle = document.getElementById('trackTitle');
+const trackArtist = document.getElementById('trackArtist');
+const progressBar = document.getElementById('progressBar');
+const timeInfo = document.getElementById('timeInfo');
+const btnRandom = document.getElementById('btnRandom');
+const btnLoop = document.getElementById('btnLoop');
+const tipsEl = document.getElementById('tips');
+const tipsUpdatedEl = document.getElementById('tipsUpdated');
+
+/* ---------- State ---------- */
+let audioCtx = null;
+let currentSource = null;
+let isPlaying = false;
+let loopMode = false;
+let progressInterval = null;
+let startTime = 0;
+let currentDuration = 0;
+let currentTitle = "—";
+let currentArtist = "Instrumental";
+let currentIndex = -1;
+
+/* Default synthesized tracks (instrumentais) — garantia de reprodução sem dependência externa */
+const SYNTH_TRACKS = [
+  {title:"Instrumental Demo — Sereno", artist:"Demo", type:"synth", key:"C", chords:["C","F","G"]},
+  {title:"Instrumental Demo — Calmaria", artist:"Demo", type:"synth", key:"Am", chords:["Am","Dm","E"]},
+  {title:"Instrumental Demo — Brisa", artist:"Demo", type:"synth", key:"G", chords:["G","C","D"]}
+];
+
+let REMOTE_TRACKS = []; // populated if remote JSON exists
+let TRACKS = [...SYNTH_TRACKS];
+
+/* Local tips fallback */
+const LOCAL_TIPS = [
+  "Sempre que no 1º grau surge a sensação de um acorde com 7, o próximo tende ao 4º grau.",
+  "Ouça o baixo (notas mais graves) — ele pode denunciar a raiz do acorde.",
+  "Progressões I–IV–V são uma janela ótima para treinar resolução harmônica.",
+  "O 6º grau frequentemente prepara a volta para o 2º ou 5º grau.",
+  "Quando soar tensão, identifique o dominante (V) que costuma resolver para I.",
+  "Toque a melodia devagar e tente identificar as notas tônicas do acorde.",
+  "Use repetição em loop curto para memorizar o timbre de cada acorde."
+];
+
+/* ---------- Helpers: time formatting ---------- */
+function formatTime(sec){
+  if(!sec || !isFinite(sec)) return "00:00";
+  const s = Math.floor(sec % 60).toString().padStart(2,"0");
+  const m = Math.floor(sec/60).toString().padStart(2,"0");
+  return m + ":" + s;
+}
+
+/* ---------- WebAudio synth utilities (triad chords) ---------- */
+function ensureAudio(){
+  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+}
+
+const NOTE_FREQ = {
+  'C':261.63,'C#':277.18,'D':293.66,'D#':311.13,'E':329.63,'F':349.23,'F#':369.99,'G':392.00,'G#':415.30,'A':440.00,'A#':466.16,'B':493.88,
+  'Cm':261.63,'C#m':277.18,'Dm':293.66,'D#m':311.13,'Em':329.63,'Fm':349.23,'F#m':369.99,'Gm':392.00,'G#m':415.30,'Am':440.00,'A#m':466.16,'Bm':493.88
+};
+
+function playChordByName(name,when=0,duration=1.0){
+  ensureAudio();
+  const root = name.replace('m','');
+  const f = NOTE_FREQ[root] || 261.63;
+  const isMinor = name.endsWith('m');
+  const third = isMinor ? f * Math.pow(2,3/12) : f * Math.pow(2,4/12);
+  const fifth = f * Math.pow(2,7/12);
+  playTone(f, when, duration);
+  playTone(third, when+0.02, duration);
+  playTone(fifth, when+0.04, duration);
+}
+
+function playTone(freq, when=0, duration=0.9){
+  ensureAudio();
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  o.type='sine';
+  o.frequency.setValueAtTime(freq, audioCtx.currentTime + when);
+  g.gain.setValueAtTime(0.0001, audioCtx.currentTime + when);
+  g.gain.exponentialRampToValueAtTime(0.09, audioCtx.currentTime + when + 0.01);
+  g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + when + duration);
+  o.connect(g); g.connect(audioCtx.destination);
+  o.start(audioCtx.currentTime + when); o.stop(audioCtx.currentTime + when + duration + 0.02);
+}
+
+/* ---------- Play a synth "track": sequence of chords with estimated duration ---------- */
+function playSynthTrack(track){
+  // simple sequence: play each chord for 1s
+  ensureAudio();
+  clearPlaying();
+  const chords = track.chords || ["C","F","G"];
+  let t = 0;
+  currentDuration = chords.length * 1.1;
+  startTime = audioCtx.currentTime;
+  // schedule chords
+  chords.forEach((ch,i)=>{
+    playChordByName(ch, t, 1.0);
+    t += 1.1;
+  });
+  // update UI and timers
+  isPlaying = true;
+  updateUIPlay(true);
+  startProgressTimer(currentDuration);
+  // when done, handle loop
+  setTimeout(()=>{
+    if(loopMode) playCurrentTrack(); else stopPlayback();
+  }, currentDuration*1000 + 200);
+}
+
+/* ---------- Playback using <audio> element for remote tracks ---------- */
+function playRemoteTrackWithAudio(track){
+  clearPlaying();
+  stopPlayback();
+  const a = new Audio(track.url);
+  a.crossOrigin = "anonymous";
+  a.play().then(()=>{
+    currentSource = a;
+    isPlaying = true;
+    updateUIPlay(true);
+    currentDuration = a.duration || 0;
+    startTime = Date.now()/1000;
+    // update progress via interval
+    progressInterval = setInterval(()=>{
+      const pos = a.currentTime || 0;
+      updateProgressUI(pos, a.duration || 0);
+    },250);
+    a.onended = ()=> {
+      clearInterval(progressInterval);
+      if(loopMode) playCurrentTrack(); else stopPlayback();
+    };
+  }).catch(err=>{
+    console.warn("Erro ao tocar remote:", err);
+    // fallback to synth
+    playSynthTrack(track);
+  });
+}
+
+/* ---------- Play logic ---------- */
+function playCurrentTrack(){
+  const all = TRACKS;
+  if(currentIndex < 0 || currentIndex >= all.length) currentIndex = 0;
+  const track = all[currentIndex];
+  currentTitle = track.title || "Instrumental";
+  currentArtist = track.artist || "Demo";
+  trackTitle.textContent = currentTitle;
+  trackArtist.textContent = currentArtist;
+  if(track.type === "synth"){
+    playSynthTrack(track);
+  } else if(track.url){
+    playRemoteTrackWithAudio(track);
+  } else {
+    playSynthTrack(track);
+  }
+}
+
+/* ---------- helpers to manage playback UI and progress ---------- */
+function startProgressTimer(duration){
+  clearInterval(progressInterval);
+  let start = Date.now();
+  progressInterval = setInterval(()=>{
+    const elapsed = (Date.now() - start)/1000;
+    updateProgressUI(elapsed, duration);
+  }, 200);
+}
+
+function updateProgressUI(elapsed, duration){
+  const pct = Math.min(100, (elapsed / Math.max(0.0001,duration)) * 100);
+  progressBar.style.width = pct + "%";
+  timeInfo.textContent = formatTime(elapsed) + " / " + formatTime(duration);
+}
+
+function clearPlaying(){
+  try{
+    if(currentSource && currentSource.pause) currentSource.pause();
+    if(currentSource && currentSource.stop) currentSource.stop();
+  }catch(e){}
+  clearInterval(progressInterval);
+  currentSource = null;
+}
+
+function stopPlayback(){
+  isPlaying = false;
+  updateUIPlay(false);
+  clearInterval(progressInterval);
+  progressBar.style.width = "0%";
+  timeInfo.textContent = "00:00 / 00:00";
+}
+
+/* ---------- UI updates ---------- */
+function updateUIPlay(playing){
+  if(playing){
+    playIcon.style.display = "none";
+    pauseIcon.style.display = "block";
+  } else {
+    playIcon.style.display = "block";
+    pauseIcon.style.display = "none";
+  }
+}
+
+/* ---------- pick random track ---------- */
+function pickRandomTrack(){
+  const n = TRACKS.length;
+  if(n === 0) return;
+  const idx = Math.floor(Math.random()*n);
+  currentIndex = idx;
+  playCurrentTrack();
+}
+
+/* ---------- load remote tracks (if configured) ---------- */
+function tryLoadRemoteTracks(){
+  if(!REMOTE_TRACKS_URL) return Promise.resolve();
+  return fetch(REMOTE_TRACKS_URL).then(r=>{
+    if(!r.ok) throw new Error("fetch failed");
+    return r.json();
+  }).then(json=>{
+    if(Array.isArray(json) && json.length>0){
+      REMOTE_TRACKS = json.map(t=>({...t, type:"remote"}));
+      TRACKS = REMOTE_TRACKS.concat(SYNTH_TRACKS);
+    }
+  }).catch(err=>{
+    console.warn("Não foi possível carregar tracks remotas:", err);
+  });
+}
+
+/* ---------- Tips fetching: try remote, fallback to local ---------- */
+function fetchRemoteTips(){
+  if(!REMOTE_TIPS_URL) return Promise.reject("no-url");
+  return fetch(REMOTE_TIPS_URL).then(r=>{
+    if(!r.ok) throw new Error("fetch failed");
+    return r.json();
+  }).then(json=>{
+    if(Array.isArray(json) && json.length>0){
+      saveTipsToLocal(json);
+      renderTips(json);
+      setTipsUpdatedToNow();
+    } else {
+      throw new Error("Formato inválido");
+    }
+  });
+}
+
+/* ---------- localStorage helpers for tips and last update ---------- */
+const STORAGE_KEY = "ato_site_v2";
+function loadFromStorage(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return null;
+    return JSON.parse(raw);
+  }catch(e){ return null; }
+}
+function saveToStorage(payload){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(payload)); }catch(e){}
+}
+function saveTipsToLocal(tips){
+  const st = loadFromStorage() || {};
+  st.tips = tips;
+  st.tipsUpdated = new Date().toISOString();
+  saveToStorage(st);
+}
+function saveTracksToLocal(tracks){
+  const st = loadFromStorage() || {};
+  st.tracks = tracks;
+  saveToStorage(st);
+}
+function setTipsUpdatedToNow(){
+  const st = loadFromStorage() || {};
+  st.tipsUpdated = new Date().toISOString();
+  saveToStorage(st);
+}
+
+/* ---------- Render tips to UI ---------- */
+function renderTips(list){
+  tipsEl.innerHTML = "";
+  const arr = Array.isArray(list) ? list : (loadFromStorage() && loadFromStorage().tips) || LOCAL_TIPS;
+  arr.slice(0,6).forEach(t=>{
+    const d = document.createElement('div');
+    d.className = 'tip';
+    d.textContent = t;
+    tipsEl.appendChild(d);
+  });
+  const st = loadFromStorage();
+  const updated = st && st.tipsUpdated ? new Date(st.tipsUpdated) : null;
+  tipsUpdatedEl.textContent = updated ? ("Última atualização: " + updated.toLocaleString()) : "Última atualização: agora";
+}
+
+/* ---------- Decide whether to fetch tips: runs on page load ---------- */
+function shouldFetchTipsNow(){
+  // check last fetch time in localStorage: if none, fetch.
+  const st = loadFromStorage();
+  if(!st || !st.tipsUpdated) return true;
+  const last = new Date(st.tipsUpdated);
+  // next scheduled refresh is today at DAILY_TIP_HOUR (local)
+  const now = new Date();
+  const today7 = new Date(now.getFullYear(), now.getMonth(), now.getDate(), DAILY_TIP_HOUR, 0, 0, 0);
+  // If last < today7 <= now, then we should fetch
+  if(last < today7 && now >= today7) return true;
+  // If it's a new day and last was yesterday before 7, also handled above
+  return false;
+}
+
+/* ---------- Initialization ---------- */
+function initApp(){
+  // attempt to load stored tracks and tips
+  const st = loadFromStorage();
+  if(st && st.tracks && st.tracks.length) {
+    TRACKS = st.tracks.concat(SYNTH_TRACKS);
+  }
+  if(st && st.tips && st.tips.length){
+    renderTips(st.tips);
+  } else {
+    renderTips(LOCAL_TIPS);
+  }
+
+  // try load remote tracks (non-blocking)
+  tryLoadRemoteTracks().then(()=> {
+    // store if remote found
+    if(REMOTE_TRACKS && REMOTE_TRACKS.length) saveTracksToLocal(REMOTE_TRACKS);
+  });
+
+  // fetch tips if scheduled or empty
+  if(shouldFetchTipsNow()){
+    fetchRemoteTips().catch(err=>{
+      // fallback to local if fetch fails
+      renderTips(loadFromStorage() && loadFromStorage().tips || LOCAL_TIPS);
+    });
+  }
+
+  // UI events
+  playBtn.addEventListener('click', ()=>{
+    if(isPlaying){ stopPlayback(); } else {
+      if(currentIndex < 0) pickRandomTrack(); else playCurrentTrack();
+    }
+  });
+  btnRandom.addEventListener('click', ()=>{ pickRandomTrack(); });
+  btnLoop.addEventListener('click', ()=>{ loopMode = !loopMode; btnLoop.style.opacity = loopMode ? 1 : 0.7; });
+
+  // keyboard space toggles play/pause when focused
+  document.addEventListener('keydown', (e)=>{
+    if(e.code === 'Space'){
+      e.preventDefault();
+      playBtn.click();
+    }
+  });
+
+  // make progress clickable? (optional) - skip for simplicity
+
+  // initial render of UI
+  updateUIPlay(false);
+  // preload a little by creating AudioContext on first user gesture
+  document.addEventListener('click', function one(){
+    ensureAudio();
+    document.removeEventListener('click', one);
+  }, {once:true});
+}
+
+/* start */
+initApp();
+</script>
 </body>
 </html>
